@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 const app = express();
 app.use(express.json());
 
-mongoose.connect("mongodb://localhost:27017/myapp");
+mongoose.connect("mongodb://localhost:27017/myapp")
+.then(() => console.log("Connected to MongoDB"))
+.catch((error) => console.error("Could not connect to MongoDB", error));
 
 const itemSchema = new mongoose.Schema({
   name: String,
@@ -14,8 +16,12 @@ const itemSchema = new mongoose.Schema({
 const Item = mongoose.model("Item", itemSchema);
 
 app.get("/items", async (req, res) => {
-  const items = await Item.find();
-  res.json(items);
+  try {
+    const items = await Item.find();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch items" });
+  }
 });
 
 app.post("/items", async (req, res) => {
@@ -49,7 +55,7 @@ app.delete("/items/:id", async (req, res) => {
     if (!deletedItem) {
       return res.status(404).json({ message: "Item not found" });
     }
-    res.json({ message: "Item deleted successfully" });
+    res.json({ message: "Item deleted successfully", item: deletedItem });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
