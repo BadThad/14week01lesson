@@ -27,4 +27,16 @@ try {
     res.status(400).json({ message: error.message });
 }});
 
+app.delete("/items/:id", async (req, res) => {
+    try {
+        const deletedItem = await Item.findByIdAndDelete(req.params.id);
+        if (!deletedItem) {
+            return res.status(404).json({ message: "Item not found" });
+        }
+        res.json({ message: "Item deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 app.listen(3000, () => console.log("Server is running on http://localhost:3000"));
