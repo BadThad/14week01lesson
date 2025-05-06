@@ -21,8 +21,8 @@ app.get("/items", async (req, res) => {
 app.post("/items", async (req, res) => {
 try {
     const newItem = new Item(req.body);
-    const savedItem = await newItem.save();
-    res.status(201).json(savedItem);
+    await newItem.save();
+    res.status(201).json(newItem);
 } catch (error) {
     res.status(400).json({ message: error.message });
 }});
